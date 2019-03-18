@@ -140,9 +140,12 @@ class App extends React.Component {
 
     getPasswords = () => {
         // Get the passwords and store them in state
-        fetch('/api/passwords')
+        fetch('api/passwords')
             .then(res => res.json())
-            .then(passwords => this.setState({ passwords }));
+            .then(passwords => this.setState({ passwords }))
+            .catch((err) => {
+                console.log('err', err);
+            });
     }
 
 

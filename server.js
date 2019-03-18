@@ -18,17 +18,8 @@ const generatePassword = require('password-generator');
 const dbRoute = "mongodb://heroku_lmrpjzl2:rcl80on37tt51fet0v2nq09qa4@ds143738.mlab.com:43738/heroku_lmrpjzl2";
 
 // connects our back end code with the database
-mongoose.connect(dbRoute);
-// , { 
-//   useNewUrlParser: true
-// });
-
-mongoose.connection.on('error', function(error) {
-  console.error('Database connection error:', error);
-});
-
-mongoose.connection.once('open', function() {
-  console.log('Database connected');
+mongoose.connect(dbRoute, { 
+  useNewUrlParser: true
 });
 
 let db = mongoose.connection;
