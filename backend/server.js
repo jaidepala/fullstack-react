@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const cors = require("cors");
+const path = require("path");
 const Data = require("./data");
 
 const API_PORT = 3001;
@@ -33,7 +34,7 @@ app.use(bodyParser.json());
 app.use(logger("dev"));
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+// app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use(cors());
 app.use(function(req, res, next) {

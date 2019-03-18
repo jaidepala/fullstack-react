@@ -22,15 +22,13 @@ class App extends React.Component {
         this.putDataToDB = this.putDataToDB.bind(this);
         this.deleteFromDB = this.deleteFromDB.bind(this);
         this.updateDB = this.updateDB.bind(this);
-
-        this.getDataFromDb();
     }
 
     // when component mounts, first thing it does is fetch all existing data in our db
     // then we incorporate a polling logic so that we can easily see if our db has 
     // changed and implement those changes into our UI
     componentDidMount() {
-        // this.getDataFromDb();
+        this.getDataFromDb();
         // if (!this.state.intervalIsSet) {
         //   let interval = setInterval(this.getDataFromDb, 1000);
         //   this.setState({ intervalIsSet: interval });
@@ -55,7 +53,7 @@ class App extends React.Component {
     // fetch data from our data base
     getDataFromDb = () => {
 
-        axios.get("http://localhost:3001/api/getData", {
+        axios.get("https://fullstack-react-app.herokuapp.com/api/getData", {
                 crossdomain: true,
                 headers: {
                   'Access-Control-Allow-Origin': '*'
@@ -85,7 +83,7 @@ class App extends React.Component {
             ++idToBeAdded;
         }
 
-        axios.post("http://localhost:3001/api/putData", {
+        axios.post("https://fullstack-react-app.herokuapp.com/api/putData", {
             id: idToBeAdded,
             message: message
         })
@@ -111,7 +109,7 @@ class App extends React.Component {
             }
         });
 
-        axios.delete("http://localhost:3001/api/deleteData", {
+        axios.delete("https://fullstack-react-app.herokuapp.com/api/deleteData", {
             data: {
                 id: objIdToDelete
             }
@@ -129,7 +127,7 @@ class App extends React.Component {
             }
         });
 
-        axios.post("http://localhost:3001/api/updateData", {
+        axios.post("https://fullstack-react-app.herokuapp.com/api/updateData", {
             id: objIdToUpdate,
             update: { message: updateToApply }
         });
