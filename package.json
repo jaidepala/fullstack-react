@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
-    "start-install": "concurrently \"cd backend && npm install\" \"cd client && npm install\"",
+    "start-server": "node index.js",
+    "start-server2": "node server.js",
+    "start": "concurrently \"nodemon index.js\" \"cd client && npm start\"",
+    "start-install": "concurrently \"npm install\" \"cd client && npm install\"",
     "heroku-postbuild": "cd client && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +23,16 @@
   },
   "homepage": "https://github.com/jaidepala/fullstack-react#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.19",
+    "morgan": "^1.9.1",
+    "password-generator": "^2.2.0",
     "concurrently": "^4.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }

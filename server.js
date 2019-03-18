@@ -8,17 +8,27 @@ const Data = require("./data");
 
 require('dotenv').config();
 
-const API_PORT = process.env.PORT || 3001;
+const API_PORT = process.env.PORT || 5000;
 const app = express();
 const router = express.Router();
+const generatePassword = require('password-generator');
 
 // this is our MongoDB database
-const dbRoute = process.env.MONGODB_URI || "mongodb://heroku_s98t037c:f6p44a0g17mgcmda306192jrah@ds157057.mlab.com:57057/heroku_s98t037c";
-// const dbRoute = "mongodb://heroku_s98t037c:f6p44a0g17mgcmda306192jrah@ds157057.mlab.com:57057/heroku_s98t037c";
+// const dbRoute = process.env.MONGODB_URI || "mongodb://heroku_lmrpjzl2:rcl80on37tt51fet0v2nq09qa4@ds143738.mlab.com:43738/heroku_lmrpjzl2";
+const dbRoute = "mongodb://heroku_lmrpjzl2:rcl80on37tt51fet0v2nq09qa4@ds143738.mlab.com:43738/heroku_lmrpjzl2";
 
 // connects our back end code with the database
-mongoose.connect(dbRoute, { 
-  useNewUrlParser: true 
+mongoose.connect(dbRoute);
+// , { 
+//   useNewUrlParser: true
+// });
+
+mongoose.connection.on('error', function(error) {
+  console.error('Database connection error:', error);
+});
+
+mongoose.connection.once('open', function() {
+  console.log('Database connected');
 });
 
 let db = mongoose.connection;
@@ -37,14 +47,19 @@ app.use(logger("dev"));
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-app.use(cors());
-app.use(function(req, res, next) {
-    // res.header("Access-Control-Allow-Origin", "http://localhost:3000"); //My frontend APP domain
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
+// Put all API endpoints under '/api'
+app.get('/passwords', (req, res) => {
+  const count = 5;
+
+  // Generate some passwords
+  const passwords = Array.from(Array(count).keys()).map(i =>
+    generatePassword(12, false)
+  )
+
+  // Return them as json
+  res.json(passwords);
+
+  console.log(`Sent ${count} passwords`);
 });
 
 // this is our get method
@@ -100,9 +115,9 @@ router.post("/putData", (req, res) => {
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname+'/client/build/index.html'));
-// });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
 
 // append /api for our http requests
 app.use("/api", router);

@@ -1,4 +1,5 @@
 import React from "react";
+import './App.css';
 import axios from "axios";
 
 class App extends React.Component {
@@ -11,6 +12,7 @@ class App extends React.Component {
 
         // initialize our state 
         this.state = {
+            passwords: [],
             data: [],
             id: 0,
             message: null,
@@ -31,6 +33,7 @@ class App extends React.Component {
     // changed and implement those changes into our UI
     componentDidMount() {
         this.getDataFromDb();
+        this.getPasswords();
         // if (!this.state.intervalIsSet) {
         //   let interval = setInterval(this.getDataFromDb, 1000);
         //   this.setState({ intervalIsSet: interval });
@@ -135,17 +138,58 @@ class App extends React.Component {
         });
     };
 
+    getPasswords = () => {
+        // Get the passwords and store them in state
+        fetch('/api/passwords')
+            .then(res => res.json())
+            .then(passwords => this.setState({ passwords }));
+    }
+
 
     // here is our UI
     // it is easy to understand their functions when you 
     // see them render into our screen
     render() {
         const { data } = this.state;
+        const { passwords } = this.state;
 
         console.log('data', data);
 
         return (
             <div>
+        {passwords.length ? (
+          <div>
+            <h1>5 Passwords.</h1>
+            <ul className="passwords">
+              {/*
+                Generally it's bad to use "index" as a key.
+                It's ok for this example because there will always
+                be the same number of passwords, and they never
+                change positions in the array.
+              */}
+              {passwords.map((password, index) =>
+                <li key={index}>
+                  {password}
+                </li>
+              )}
+            </ul>
+            <button
+              className="more"
+              onClick={this.getPasswords}>
+              Get More
+            </button>
+          </div>
+        ) : (
+          // Render a helpful message otherwise
+          <div>
+            <h1>No passwords :(</h1>
+            <button
+              className="more"
+              onClick={this.getPasswords}>
+              Try Again?
+            </button>
+          </div>
+        )}
         <ul>
           {!data || data.length <= 0
             ? "NO DB ENTRIES YET"
