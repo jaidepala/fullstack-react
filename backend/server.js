@@ -6,19 +6,20 @@ const cors = require("cors");
 const path = require("path");
 const Data = require("./data");
 
-const API_PORT = 3001;
+require('dotenv').config();
+
+const API_PORT = process.env.PORT || 3001;
 const app = express();
 const router = express.Router();
 
 // this is our MongoDB database
-// const dbRoute = process.env.MONGODB_URI || "mongodb://heroku_s98t037c:f6p44a0g17mgcmda306192jrah@ds157057.mlab.com:57057/heroku_s98t037c";
-const dbRoute = "mongodb://heroku_s98t037c:f6p44a0g17mgcmda306192jrah@ds157057.mlab.com:57057/heroku_s98t037c";
+const dbRoute = process.env.MONGODB_URI || "mongodb://heroku_s98t037c:f6p44a0g17mgcmda306192jrah@ds157057.mlab.com:57057/heroku_s98t037c";
+// const dbRoute = "mongodb://heroku_s98t037c:f6p44a0g17mgcmda306192jrah@ds157057.mlab.com:57057/heroku_s98t037c";
 
 // connects our back end code with the database
-mongoose.connect(
-  dbRoute,
-  { useNewUrlParser: true }
-);
+mongoose.connect(dbRoute, { 
+  useNewUrlParser: true 
+});
 
 let db = mongoose.connection;
 
@@ -34,7 +35,7 @@ app.use(bodyParser.json());
 app.use(logger("dev"));
 
 // Serve static files from the React app
-// app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use(cors());
 app.use(function(req, res, next) {
@@ -99,9 +100,9 @@ router.post("/putData", (req, res) => {
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/build/index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname+'/client/build/index.html'));
+// });
 
 // append /api for our http requests
 app.use("/api", router);

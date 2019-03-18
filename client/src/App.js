@@ -5,6 +5,8 @@ class App extends React.Component {
 
     constructor(props) {
 
+        console.log('en', process.env.REACT_APP_SECRET_NAME);
+
         super(props);
 
         // initialize our state 
@@ -53,7 +55,7 @@ class App extends React.Component {
     // fetch data from our data base
     getDataFromDb = () => {
 
-        axios.get("https://fullstack-react-app.herokuapp.com/api/getData", {
+        axios.get("api/getData", {
                 crossdomain: true,
                 headers: {
                   'Access-Control-Allow-Origin': '*'
@@ -83,7 +85,7 @@ class App extends React.Component {
             ++idToBeAdded;
         }
 
-        axios.post("https://fullstack-react-app.herokuapp.com/api/putData", {
+        axios.post("api/putData", {
             id: idToBeAdded,
             message: message
         })
@@ -109,7 +111,7 @@ class App extends React.Component {
             }
         });
 
-        axios.delete("https://fullstack-react-app.herokuapp.com/api/deleteData", {
+        axios.delete("api/deleteData", {
             data: {
                 id: objIdToDelete
             }
@@ -127,7 +129,7 @@ class App extends React.Component {
             }
         });
 
-        axios.post("https://fullstack-react-app.herokuapp.com/api/updateData", {
+        axios.post("api/updateData", {
             id: objIdToUpdate,
             update: { message: updateToApply }
         });
