@@ -58,7 +58,7 @@ class App extends React.Component {
     // fetch data from our data base
     getDataFromDb = () => {
 
-        axios.get("/api/getData", {
+        axios.get("api/getData", {
                 crossdomain: true,
                 headers: {
                   'Access-Control-Allow-Origin': '*'
@@ -86,7 +86,7 @@ class App extends React.Component {
             ++idToBeAdded;
         }
 
-        axios.post("/api/putData", {
+        axios.post("api/putData", {
             id: idToBeAdded,
             message: message
         })
@@ -112,7 +112,7 @@ class App extends React.Component {
             }
         });
 
-        axios.delete("/api/deleteData", {
+        axios.delete("api/deleteData", {
             data: {
                 id: objIdToDelete
             }
@@ -130,7 +130,7 @@ class App extends React.Component {
             }
         });
 
-        axios.post("/api/updateData", {
+        axios.post("api/updateData", {
             id: objIdToUpdate,
             update: { message: updateToApply }
         });
@@ -138,7 +138,7 @@ class App extends React.Component {
 
     getPasswords = () => {
         // Get the passwords and store them in state
-        fetch('/api/passwords')
+        fetch('api/passwords')
             .then(res => res.json())
             .then(passwords => this.setState({ passwords }))
             .catch((err) => {

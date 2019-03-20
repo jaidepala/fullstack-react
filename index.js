@@ -42,8 +42,6 @@ router.get("/getData", (req, res) => {
 
     Data.find((err, resultData) => {
 
-        console.log('theData', resultData);
-
         if (err) return res.json({ success: false, error: err });
         return res.json({ success: true, data: resultData });
     });
@@ -106,9 +104,9 @@ router.delete("/deleteData", (req, res) => {
     });
 });
 
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname+'/client/build/index.html'));
-// });
+router.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
 
 app.use("/api", router);
 

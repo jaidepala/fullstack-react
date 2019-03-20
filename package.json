@@ -21,10 +21,6 @@
   "bugs": {
     "url": "https://github.com/jaidepala/fullstack-react/issues"
   },
-  "engines": {
-    "npm": "5.7.1",
-    "node": "9.5.0"
-  },
   "homepage": "https://github.com/jaidepala/fullstack-react#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
