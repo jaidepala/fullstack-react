@@ -1,12 +1,15 @@
 const express = require('express');
 const path = require('path');
 const generatePassword = require('password-generator');
-var mongoose = require('mongoose');
+const mongoose = require("mongoose");
+
+const bodyParser = require("body-parser");
+const logger = require("morgan");
 const app = express();
 const router = express.Router();
 const Data = require("./data");
 
-var mongoDB = "mongodb://heroku_lmrpjzl2:rcl80on37tt51fet0v2nq09qa4@ds143738.mlab.com:43738/heroku_lmrpjzl2";
+var mongoDB = "mongodb://heroku_16g77l48:12go9ld1mgc9279p2c8gog7qha@ds117846.mlab.com:17846/heroku_16g77l48";
 
 mongoose.connect(mongoDB, {
     useNewUrlParser: true
@@ -17,9 +20,13 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+// app.use(express.static(path.join(__dirname, 'client/build')));
 
-app.get('/api/passwords', (req, res) => {
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(logger("dev"));
+
+router.get('/passwords', (req, res) => {
     const count = 5;
 
     // Generate some passwords
@@ -29,15 +36,12 @@ app.get('/api/passwords', (req, res) => {
 
     // Return them as json
     res.json(passwords);
-
-    console.log(`Sent ${count} passwords`);
 });
 
-app.get("/api/getData", (req, res) => {
+router.get("/getData", (req, res) => {
 
     Data.find((err, resultData) => {
 
-        console.log('err', err);
         console.log('theData', resultData);
 
         if (err) return res.json({ success: false, error: err });
@@ -45,12 +49,73 @@ app.get("/api/getData", (req, res) => {
     });
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+router.post("/updateData", (req, res) => {
+    const { id, update } = req.body;
+    
+    Data.findOneAndUpdate(id, update, err => {
+        if (err) return res.json({ success: false, error: err });
+        return res.json({ success: true });
+    });
 });
 
-const port = process.env.PORT || 5000;
-app.listen(port);
+router.post("/putData", (req, res) => {
 
-console.log(`Password generator listening on ${port}`);
+    if(!req.body || req.body == null)
+    {
+        return res.json({
+            success: false,
+            params: req.body,
+            message: "No Params"
+        });
+    }
+
+    let data = new Data();
+
+    console.log('body', req.body);
+
+    const id = req.body.id;
+    const message = req.body.message;
+
+    return res.json({
+        id: id,
+        message: message
+    });
+
+    if ((!id && id !== 0) || !message) {
+        return res.json({
+            success: false,
+            error: "INVALID INPUTS"
+        });
+    }
+  
+    data.message = message;
+    data.id = id;
+    
+    data.save(err => {
+        if (err) return res.json({ success: false, error: err });
+        return res.json({ success: true });
+    });
+});
+
+router.delete("/deleteData", (req, res) => {
+    const { id } = req.body;
+    
+    Data.findOneAndDelete(id, err => {
+        if (err) return res.send(err);
+        return res.json({ success: true });
+    });
+});
+
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname+'/client/build/index.html'));
+// });
+
+app.use("/api", router);
+
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+
+    console.log(`Password generator listening on ${port}`);
+});
+
 
