@@ -97,9 +97,11 @@ router.post("/putData", (req, res) => {
   }
   data.message = message;
   data.id = id;
-  data.save(err => {
+  data.save((err, response) => {
     if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true });
+
+    response.success = true;
+    return res.json( response );
   });
 });
 

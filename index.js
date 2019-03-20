@@ -69,15 +69,8 @@ router.post("/putData", (req, res) => {
 
     let data = new Data();
 
-    console.log('body', req.body);
-
     const id = req.body.id;
     const message = req.body.message;
-
-    return res.json({
-        id: id,
-        message: message
-    });
 
     if ((!id && id !== 0) || !message) {
         return res.json({
@@ -89,9 +82,11 @@ router.post("/putData", (req, res) => {
     data.message = message;
     data.id = id;
     
-    data.save(err => {
+    data.save((err, response) => {
         if (err) return res.json({ success: false, error: err });
-        return res.json({ success: true });
+
+        response.success = true;
+        return res.json( response );
     });
 });
 
@@ -103,6 +98,7 @@ router.delete("/deleteData", (req, res) => {
         return res.json({ success: true });
     });
 });
+
 
 router.get('*', (req, res) => {
     res.sendFile(path.join(__dirname+'/client/build/index.html'));
