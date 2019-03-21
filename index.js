@@ -85,7 +85,6 @@ router.post("/putData", (req, res) => {
     data.save((err, response) => {
         if (err) return res.json({ success: false, error: err });
 
-        response.success = true;
         return res.json( response );
     });
 });
@@ -93,9 +92,10 @@ router.post("/putData", (req, res) => {
 router.delete("/deleteData", (req, res) => {
     const { id } = req.body;
     
-    Data.findOneAndDelete(id, err => {
+    Data.findOneAndDelete(id, (err, response) => {
         if (err) return res.send(err);
-        return res.json({ success: true });
+
+        return res.json( response );
     });
 });
 
@@ -105,15 +105,15 @@ router.delete("/deleteData", (req, res) => {
 // });
 
 //production mode
-if(process.env.NODE_ENV === 'production') {
+// if(process.env.NODE_ENV === 'production') {
     
     app.use(express.static(path.join(__dirname, 'client/build')));
     
     //
     router.get('*', (req, res) => {
         res.sendfile(path.join(__dirname = 'client/build/index.html'));
-    })
-}
+    });
+// }
 
 app.use("/api", router);
 

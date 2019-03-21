@@ -111,7 +111,7 @@ class App extends React.Component {
 
             // console.log('res', res);
 
-            if( res && res.success )
+            if( res && res != null )
             {
                 this.getDataFromDb();
             }
@@ -136,7 +136,10 @@ class App extends React.Component {
         })
         .then(res => {
 
-            this.getDataFromDb();
+            if( res && res != null )
+            {
+                this.getDataFromDb();
+            }
         });
     };
 
