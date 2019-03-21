@@ -100,16 +100,27 @@ router.delete("/deleteData", (req, res) => {
 });
 
 
-router.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname+'/client/build/index.html'));
-});
+// router.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname+'/client/build/index.html'));
+// });
+
+//production mode
+if(process.env.NODE_ENV === 'production') {
+    
+    app.use(express.static(path.join(__dirname, 'client/build')));
+    
+    //
+    router.get('*', (req, res) => {
+        res.sendfile(path.join(__dirname = 'client/build/index.html'));
+    })
+}
 
 app.use("/api", router);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
 
-    console.log(`App listening on ${port}`);
+    console.log(`App listening on ${port}, Env: ${process.env.NODE_ENV}`);
 });
 
 
