@@ -9,7 +9,7 @@ const app = express();
 const router = express.Router();
 const Data = require("./data");
 
-var mongoDB = "mongodb://heroku_16g77l48:12go9ld1mgc9279p2c8gog7qha@ds117846.mlab.com:17846/heroku_16g77l48";
+var mongoDB = process.env.MONGODB_URI || "mongodb://heroku_16g77l48:12go9ld1mgc9279p2c8gog7qha@ds117846.mlab.com:17846/heroku_16g77l48";
 
 mongoose.connect(mongoDB, {
     useNewUrlParser: true
@@ -109,7 +109,7 @@ app.use("/api", router);
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
 
-    console.log(`Password generator listening on ${port}`);
+    console.log(`App listening on ${port}`);
 });
 
 
