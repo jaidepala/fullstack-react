@@ -1,7 +1,10 @@
 import React from "react";
 import axios from "axios";
+import { withStyles } from '@material-ui/core/styles';
 
-import Button from "@material-ui/core/Button";
+import Paper from '@material-ui/core/Paper';
+// import CircularProgress from '@material-ui/core/CircularProgress';
+// import Button from "@material-ui/core/Button";
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -15,6 +18,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import Card from '@material-ui/core/Card';
 // import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 class Home extends React.Component {
 
@@ -26,6 +31,7 @@ class Home extends React.Component {
 
         // initialize our state 
         this.state = {
+            loader: 0,
             passwords: [],
             data: [],
             id: 0,
@@ -76,6 +82,13 @@ class Home extends React.Component {
     // fetch data from our data base
     getDataFromDb = () => {
 
+        if( this.state.loader && this.state.loader === 1 )
+            return false;
+
+        this.setState({
+            loader: 1
+        });
+
         axios.get("api/getData", {
                 crossdomain: true,
                 headers: {
@@ -84,12 +97,20 @@ class Home extends React.Component {
             })
             // .then(response => response.json())
             .then(res => {
+
+                this.setState({
+                    loader: 2
+                });
             	if(!this.mounted) {
             		return false;
             	}
                 this.setState({ data: res.data.data })
             })
             .catch(err => {
+
+                this.setState({
+                    loader: 3
+                });
 
                 console.log('err', err);
             });
@@ -194,20 +215,38 @@ class Home extends React.Component {
     // it is easy to understand their functions when you 
     // see them render into our screen
     render() {
+
+        const styles = theme => ({
+          fab: {
+            margin: theme.spacing.unit,
+          },
+          extendedIcon: {
+            marginRight: theme.spacing.unit,
+          },
+        });
+
         const { data } = this.state;
         const { passwords } = this.state;
+        const { loader } = this.state;
+        const { classes } = withStyles(styles);
+
+        console.log('classes', classes);
 
         return (
-            <div>
+            <Paper>
                 <Card>
                     {
                         !data || data.length <= 0 ?
-
-                        <h2>  
-                            No Entries Found!
-                        </h2>  
+                        (
+                            loader > 1 ? 
+                            <h2>  
+                                No Entries Found!
+                            </h2>  
+                            :
+                            ''
+                        )
                         :
-                        <div>  
+                        <div>
                             <List component="nav">
                                 {
                                     data.map(thisData => (
@@ -237,19 +276,36 @@ class Home extends React.Component {
                             </List>
                         </div>  
                     }
-                    <TextField
+                    {
+                        loader <= 1 ?
+                        (
+                            <List component="nav" className="shimmer-container row">
+                                {   
+                                    [1, 2, 3].map(load => (<ListItem dense key={load}><wline className="shine"></wline></ListItem>))
+                                }
+                            </List>  
+                        )
+                        :
+                        ''
+                    }
 
-                        label="add something to db"
-                        margin="normal"
-                        onChange={e => this.setState({ message: e.target.value })} />
+                    <form noValidate autoComplete="off">
+                        <TextField
 
-                    <Button 
-                            variant="contained" 
-                            color="primary" 
-                            onClick={() => this.putDataToDB(this.state.message)}>
-                        
-                            ADD
-                    </Button>
+                            label="add something to db"
+                            margin="none"
+                            variant="outlined"
+                            onChange={e => this.setState({ message: e.target.value })} />
+
+                        <Fab 
+                                color="primary" 
+                                aria-label="Add" 
+                                onClick={() => this.putDataToDB(this.state.message)}>
+
+                                <AddIcon />
+                        </Fab>
+                    </form>
+
                 </Card>
                 <Card style={{ padding: "25px 25px" }}>
                     <input
@@ -280,7 +336,7 @@ class Home extends React.Component {
                         UPDATE
                     </button>
                 </Card>
-            </div>
+            </Paper>
         );
     }
 }
