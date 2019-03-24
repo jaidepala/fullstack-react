@@ -67,7 +67,7 @@ class Header extends React.Component {
 			    	<List>
 				      	{['Home', 'Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
 		      				<Link to="/" key={text}>
-					        	<ListItem button>
+					        	<ListItem button style="text-decoration: none;">
 						          		<ListItemText primary={text} />
 					        	</ListItem>
 			        		</Link>

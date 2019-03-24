@@ -2,6 +2,15 @@ import React from "react";
 import axios from "axios";
 import { withStyles } from '@material-ui/core/styles';
 
+import { display } from '@material-ui/system';
+
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+
 import Paper from '@material-ui/core/Paper';
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Button from "@material-ui/core/Button";
@@ -34,6 +43,8 @@ class Home extends React.Component {
             loader: 0,
             passwords: [],
             data: [],
+            inputType: '',
+            name: 'hai',
             id: 0,
             message: null,
             intervalIsSet: false,
@@ -48,6 +59,7 @@ class Home extends React.Component {
         this.updateDB = this.updateDB.bind(this);
         this.selectDataToEdit = this.selectDataToEdit.bind(this);
         this.selectDataToDelete = this.selectDataToDelete.bind(this);
+        this.selectInputType = this.selectInputType.bind(this);
     }
 
     // when component mounts, first thing it does is fetch all existing data in our db
@@ -210,6 +222,13 @@ class Home extends React.Component {
             });
     }
 
+    selectInputType = event => {
+        
+        this.setState({ [event.target.name]: event.target.value });
+
+        console.log('ths', this.state);
+    };
+
 
     // here is our UI
     // it is easy to understand their functions when you 
@@ -228,9 +247,6 @@ class Home extends React.Component {
         const { data } = this.state;
         const { passwords } = this.state;
         const { loader } = this.state;
-        const { classes } = withStyles(styles);
-
-        console.log('classes', classes);
 
         return (
             <Paper>
@@ -281,13 +297,39 @@ class Home extends React.Component {
                         (
                             <List component="nav" className="shimmer-container row">
                                 {   
-                                    [1, 2, 3].map(load => (<ListItem dense key={load}><wline className="shine"></wline></ListItem>))
+                                    [1, 2, 3].map(load => (<ListItem dense key={load}><div className="full-width-line shine"></div></ListItem>))
                                 }
                             </List>  
                         )
                         :
                         ''
                     }
+                    <div className="select-container" >
+                        <FormControl>
+                            <InputLabel htmlFor="select-input-type">
+                                Select Input Type
+                            </InputLabel>
+                            <Select
+                                value={this.state.inputType}
+                                onChange={this.selectInputType}
+                                input={<Input name="inputType" id="age-label-placeholder" />}
+                                displayEmpty
+                                inputProps={{
+                                    name: 'inputType',
+                                    id: 'select-input-type',
+                                }}
+                                name="inputType">
+                                
+                                <MenuItem disabled value="">
+                                    <em>None</em>
+                                </MenuItem>
+                                <MenuItem value={1}>Input</MenuItem>
+                                <MenuItem value={2}>Select</MenuItem>
+                                <MenuItem value={3}>Checkbox</MenuItem>
+                                <MenuItem value={4}>Radio</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
 
                     <form noValidate autoComplete="off">
                         <TextField

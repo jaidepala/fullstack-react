@@ -32,24 +32,24 @@ body {
     -webkit-animation-timing-function: linear;
 }
 
-box {
+.box {
     height: 104px;
     width: 100px;
 }
 
-lines {
+.lines {
     height: 10px;
     margin-top: 10px;
     width: 200px;
 }
 
-wline {
+.full-width-line {
     height: 25px;
     margin-top: 10px;
     width: 500px;
 }
 
-photo {
+.photo {
     display: block !important;
     width: 325px;
     height: 100px;
@@ -62,4 +62,9 @@ photo {
     margin-left: 25px;
     margin-top: 15px;
     vertical-align: top;
+}
+
+.select-container {
+    display: block;
+    padding: 10px 10px;
 }
