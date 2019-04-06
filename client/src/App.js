@@ -1,14 +1,9 @@
 import React from "react";
-import axios from "axios";
+// import axios from "axios";
 // import ReactDOM from "react-dom";
 import "./App.css";
 
 import Header from "./components/header";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-
-// MODULES
-    import Home from "./modules/home";
-    import About from "./modules/about";
 
 class App extends React.Component {
 
@@ -28,13 +23,6 @@ class App extends React.Component {
         return (
             <div className="app-container">
                 <Header />
-                <Router>
-
-                        <Route exact path="/" component={Home} />
-                        // <Route path="/home" component={Home} />
-                        <Route path="/about" component={About} />
-
-                </Router>
             </div>
         );
     };

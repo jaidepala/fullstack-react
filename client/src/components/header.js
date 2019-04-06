@@ -1,42 +1,31 @@
 // REF:
-// https://material-ui.com/demos/drawers/
+// Drawers Ref
+// 		https://material-ui.com/demos/drawers/
+// Routers Ref
+// 		https://stackoverflow.com/questions/41474134/nested-routes-with-react-router-v4
+// 		https://reacttraining.com/react-router/
 
 import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
+// import PropTypes from "prop-types";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import Drawer 		from "@material-ui/core/Drawer";
 import AppBar 		from "@material-ui/core/AppBar";
 import Toolbar 		from "@material-ui/core/Toolbar";
 import Typography 	from "@material-ui/core/Typography";
-import Button 		from "@material-ui/core/Button";
+// import Button 		from "@material-ui/core/Button";
 import List 		from "@material-ui/core/List";
 import Divider 		from "@material-ui/core/Divider";
 import ListItem 	from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+// import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton 	from '@material-ui/core/IconButton';
 import MenuIcon 	from "@material-ui/icons/Menu";
 
-const styles = {
-	list: {
-    	width: 250,
-  	},
-	fullList: {
-    	width: 'auto',
-  	},
-  	root: {
-    	flexGrow: 1,
-  	},
-  	grow: {
-    	flexGrow: 1,
-  	},
-  	menuButton: {
-    	marginLeft: -12,
-    	marginRight: 20,
-  	}
-};
+// MODULES
+    import Home 		from "../modules/home";
+    import About 		from "../modules/about";
+    import CreateForm 	from "../modules/create-form";
 
 class Header extends React.Component {
 
@@ -60,33 +49,48 @@ class Header extends React.Component {
 	};
 
 	render(props) {
+	  	// {['Home', 'Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+			// 	<Link to="/" key={text}>
+	      //   	<ListItem button style="text-decoration: none;">
+		     //      		<ListItemText primary={text} />
+	      //   	</ListItem>
+	// 		</Link>
+	  	// ))}
 
 		const sideList = (
 		  	<div>
-		  		<Router>
-			    	<List>
-				      	{['Home', 'Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-		      				<Link to="/" key={text}>
-					        	<ListItem button style="text-decoration: none;">
-						          		<ListItemText primary={text} />
-					        	</ListItem>
+		    	<List>
+		    		<Link className="menu-link" to="/">
+			        	<ListItem button style={{"textDecoration": "none"}}>
+				          		<ListItemText primary="Home" />
+			        	</ListItem>
+		    		</Link>
+		    		<Link className="menu-link" to="/about">
+			        	<ListItem button style={{"textDecoration": "none"}}>
+				          		<ListItemText primary="About" />
+			        	</ListItem>
+		    		</Link>
+		    		<Link className="menu-link" to="/create-form">
+			        	<ListItem button style={{"textDecoration": "none"}}>
+				          		<ListItemText primary="Create Form" />
+			        	</ListItem>
+		    		</Link>
+		    	</List>
+			    <Divider />
+			    <List>
+			      	{['All mail', 'Trash', 'Spam'].map((text, index) => (
+			        	<ListItem button key={text}>
+			        		<Link to={"/" + text}>
+			          			<ListItemText primary={text} />
 			        		</Link>
-				      	))}
-			    	</List>
-				    <Divider />
-				    <List>
-				      	{['All mail', 'Trash', 'Spam'].map((text, index) => (
-				        	<ListItem button key={text}>
-				          		<ListItemText primary={text} />
-				        	</ListItem>
-				      	))}
-				    </List>
-			    </Router>
+			        	</ListItem>
+			      	))}
+			    </List>
 		  	</div>
 		);
 
 		return (
-			<div className={this.state.classes.root}>
+			<Router className={this.state.classes.root}>
 				<AppBar position="static">
 					<Toolbar>
 						<IconButton 
@@ -115,7 +119,13 @@ class Header extends React.Component {
 						{ sideList }
 					</div>
 				</Drawer>
-			</div>
+				<div className="app-container">
+	                
+	                <Route exact path="/" component={Home} />
+	                <Route path="/about" component={About} />
+	                <Route path="/create-form" component={CreateForm} />
+				</div>
+			</Router>
 		);
 	};
 

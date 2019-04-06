@@ -1,12 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { withStyles } from '@material-ui/core/styles';
-
-import { display } from '@material-ui/system';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -43,7 +39,7 @@ class Home extends React.Component {
             loader: 0,
             passwords: [],
             data: [],
-            inputType: '',
+            inputType: '-1',
             name: 'hai',
             id: 0,
             message: null,
@@ -235,17 +231,8 @@ class Home extends React.Component {
     // see them render into our screen
     render() {
 
-        const styles = theme => ({
-          fab: {
-            margin: theme.spacing.unit,
-          },
-          extendedIcon: {
-            marginRight: theme.spacing.unit,
-          },
-        });
-
         const { data } = this.state;
-        const { passwords } = this.state;
+        // const { passwords } = this.state;
         const { loader } = this.state;
 
         return (
@@ -305,14 +292,14 @@ class Home extends React.Component {
                         ''
                     }
                     <div className="select-container" >
-                        <FormControl>
+                        <FormControl className="show">
                             <InputLabel htmlFor="select-input-type">
                                 Select Input Type
                             </InputLabel>
                             <Select
                                 value={this.state.inputType}
                                 onChange={this.selectInputType}
-                                input={<Input name="inputType" id="age-label-placeholder" />}
+                                input={<Input name="inputType" id="select-type" />}
                                 displayEmpty
                                 inputProps={{
                                     name: 'inputType',
@@ -320,9 +307,8 @@ class Home extends React.Component {
                                 }}
                                 name="inputType">
                                 
-                                <MenuItem disabled value="">
-                                    <em>None</em>
-                                </MenuItem>
+                                
+                                <MenuItem disabled value="-1">Please Select</MenuItem>
                                 <MenuItem value={1}>Input</MenuItem>
                                 <MenuItem value={2}>Select</MenuItem>
                                 <MenuItem value={3}>Checkbox</MenuItem>

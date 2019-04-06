@@ -2,6 +2,48 @@ body {
     margin: 0px 0px !important;
 }
 
+
+.show {
+    display: block!important;
+}
+
+.hide {
+    display: none!important;
+}
+
+/*
+    Header
+*/
+    ul a.menu-link {
+        text-decoration: none;
+    }
+    
+/*
+    Create Form Container
+*/
+    .create-form-container {
+        height: -webkit-fill-available;
+        padding: 10px 10px;
+    }
+
+    .add-data-container {
+        margin: 15px 0px 30px;
+    }
+
+    .add-data-container .add-option-btn-container {
+        text-align: right;
+        margin: 10px 0px 30px;
+    }
+
+    .add-data-container .add-option-btn-container .add-option-btn {
+        margin: 10px;
+    }
+
+    .demo-form {
+        padding: 10px;
+        min-height: 50px;
+    }
+
 /*
 	Shimmer CSS 
 	REF: https://codepen.io/kianlavi/pen/BzbRZw
