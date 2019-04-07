@@ -297,6 +297,7 @@ class Home extends React.Component {
                                 Select Input Type
                             </InputLabel>
                             <Select
+                                style={{ alignSelf: 'center', width: '100%' }}
                                 value={this.state.inputType}
                                 onChange={this.selectInputType}
                                 input={<Input name="inputType" id="select-type" />}

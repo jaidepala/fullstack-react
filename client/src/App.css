@@ -114,3 +114,9 @@ body {
     display: block;
     padding: 10px 10px;
 }
+
+
+.MuiPaper-root-10 .MuiPaper-elevation1-13 {
+    padding: 5px 5px;
+    margin: 15px 10px;
+}
