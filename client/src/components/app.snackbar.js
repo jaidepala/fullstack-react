@@ -25,6 +25,11 @@ class AppSnackBar extends React.Component {
 		this.handleClose = this.handleClose.bind(this);
 	};
 
+	componentDidMount() {
+
+		this.handleClick();
+	};
+
 	handleClick = () => {
 		
 		this.setState({ 
@@ -47,7 +52,6 @@ class AppSnackBar extends React.Component {
 
 		return (
 			<div className="snackbar-container">
-				<Button onClick={this.handleClick}>Open simple snackbar</Button>
 				<Snackbar
 					anchorOrigin={{
 						vertical: 'bottom',
