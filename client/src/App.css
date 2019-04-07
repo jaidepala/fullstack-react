@@ -22,7 +22,7 @@ body {
     Create Form Container
 */
     .create-form-container {
-        height: -webkit-fill-available;
+        min-height: auto;
         padding: 10px 10px;
     }
 
@@ -37,6 +37,10 @@ body {
 
     .add-data-container .add-option-btn-container .add-option-btn {
         margin: 10px;
+    }
+
+    .form-selection-container {
+        width: 100%
     }
 
     .demo-form {
