@@ -1,5 +1,6 @@
 // REF:
 // https://material-ui.com/demos/snackbars/
+// https://medium.freecodecamp.org/how-to-show-informational-messages-using-material-ui-in-a-react-web-app-5b108178608
 import React from "react";
 
 import Button from '@material-ui/core/Button';
@@ -7,15 +8,20 @@ import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
+let openSnackbarFn;
+
 class AppSnackBar extends React.Component {
 
 	constructor( props ) {
 
 		super( props );
 
+		this.queue = [];
+
 		this.state = {
 
 			open: false,
+			messageInfo: {},
 			msg: props.msg,
 			actionBtn: props.actionBtn,
 			duration: parseInt(props.duration) || 5000
@@ -23,18 +29,51 @@ class AppSnackBar extends React.Component {
 
 		this.handleClick = this.handleClick.bind(this);
 		this.handleClose = this.handleClose.bind(this);
+		this.processQueue = this.processQueue.bind(this);
+		this.handleExited = this.handleExited.bind(this);
 	};
 
 	componentDidMount() {
 
-		this.handleClick();
+    	openSnackbarFn = this.handleClick;
 	};
 
-	handleClick = () => {
+	processQueue = () => {
 		
-		this.setState({ 
-			open: true
-		});
+		if (this.queue.length > 0) {
+			
+			this.setState({
+				messageInfo: this.queue.shift(),
+				open: true,
+			});
+		}
+	};
+
+	handleClick = ( snackbarConfig ) => {
+		
+		let duration = snackbarConfig.duration;
+		let msg = snackbarConfig.msg;
+		let actionBtn = snackbarConfig.actionBtn;
+
+	    this.queue.push({
+			duration: duration,
+			msg: msg,
+			actionBtn: actionBtn,
+			key: new Date().getTime(),
+	    });
+
+	    if (this.state.open) {
+	      // immediately begin dismissing current message
+	      // to start showing new one
+	      
+	      	this.setState({ 
+	  			open: false 
+	      	});
+
+	    } else {
+	      
+      		this.processQueue();
+	    }
 	};
 
 	handleClose = (event, reason) => {
@@ -48,24 +87,34 @@ class AppSnackBar extends React.Component {
 		});
 	};
 
+	handleExited = () => {
+		
+		this.processQueue();
+	};
+
 	render() {
+    	
+    	const { messageInfo } = this.state;
+
+		const message = (<span className="snackbar-message"
+		    dangerouslySetInnerHTML={{ __html: messageInfo.msg}} />
+		);
 
 		return (
 			<div className="snackbar-container">
 				<Snackbar
+          			key={ messageInfo.key }
 					anchorOrigin={{
 						vertical: 'bottom',
 						horizontal: 'left',
 					}}
 					open={ this.state.open }
-					autoHideDuration={ this.state.duration }
+					autoHideDuration={ messageInfo.duration }
 					onClose={ this.handleClose }
 					ContentProps={{
 						'aria-describedby': 'message-id',
 					}}
-					message={<span id="message-id">
-						{ this.state.msg }
-					</span>}
+					message={ message }
 					action={[
 						<Button 
 								key="undo" 
@@ -73,7 +122,7 @@ class AppSnackBar extends React.Component {
 								size="small" 
 								onClick={ this.handleClose }>
 					  			
-					  			{ this.state.actionBtn }
+					  			{ messageInfo.actionBtn }
 						</Button>,
 						<IconButton
 							key="close"
@@ -88,5 +137,10 @@ class AppSnackBar extends React.Component {
 		);
 	};
 };
+
+export function openSnackbar(snackbarConfig) {
+
+	openSnackbarFn(snackbarConfig);
+}
 
 export default AppSnackBar;

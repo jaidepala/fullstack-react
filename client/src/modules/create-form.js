@@ -31,7 +31,8 @@ import Radio from '@material-ui/core/Radio';
 
 // Components 
     
-    import Util from '../components/util';
+    import AppSnackBar, { openSnackbar } from '../components/app.snackbar';
+    // import Util from '../components/util';
 
 class CreateForm extends React.Component {
 
@@ -50,8 +51,6 @@ class CreateForm extends React.Component {
             formOptionValue: '',
             formOptionSelected: '',
             formOptions: [],
-
-            snackbar: null
         };
 
         this.getFormType = this.getFormType.bind(this);
@@ -178,13 +177,10 @@ class CreateForm extends React.Component {
             else
                 msg = 'Please enter value.'
 
-            this.setState({
-
-                snackbar: Util.createSnackBar({
-                    msg: msg,
-                    actionBtn: 'Ok',
-                    duration: 5000
-                })
+            openSnackbar({
+                msg: msg,
+                actionBtn: 'Ok',
+                duration: 5000
             });
 
             // this.state.snackbar.handleClick();
@@ -323,7 +319,7 @@ class CreateForm extends React.Component {
                         { demoFormTypeContainer }
                     </Card>
                 </Paper>
-                { this.state.snackbar }
+                <AppSnackBar />
             </Paper>
         );
     };
