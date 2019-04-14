@@ -9,7 +9,8 @@ import axios from "axios";
 
 import FormControl from '@material-ui/core/FormControl';
 // import Typography from '@material-ui/core/Typography';
-import Divider from "@material-ui/core/Divider";
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -50,7 +51,10 @@ class CreateForm extends React.Component {
             formOptionLabel: '',
             formOptionValue: '',
             formOptionSelected: '',
-            formOptions: [],
+            formOptions: [{
+                optionValue: 1,
+                optionName: '1'
+            }],
         };
 
         this.getFormType = this.getFormType.bind(this);
@@ -202,6 +206,34 @@ class CreateForm extends React.Component {
 
     saveFormDetails() {
 
+        let msObj = {
+
+        };
+
+        axios.post("api/create-form", {
+            template: {
+                type: 'input',
+                label: 'Enter your name: ',
+                placeholder: '',
+                helperText: '',
+                options: null
+            }
+        })
+        .then(res => {
+
+            if( res && res != null )
+            {
+                openSnackbar({
+                    msg: 'Saved Successfully!',
+                    actionBtn: 'Ok',
+                    duration: 5000
+                });
+            }
+        })
+        .catch(err => {
+
+            console.log('err', err);
+        });
     };
 
     render() {
@@ -268,21 +300,22 @@ class CreateForm extends React.Component {
                             onChange={e => this.setState({ formHelpertext: e.target.value })} 
                             fullWidth />
                     </div>
+                    <div className="submit-container">
+
+                        <Button 
+                                variant="contained" 
+                                size="large" 
+                                onClick={() => this.saveFormDetails()}
+                                fullWidth
+                                color="primary">
+
+                            Save
+                        </Button>
+                    </div>
                 </FormControl>
                 <Card 
                     className={ showOptionClass }>
-                    <List component="nav">
-                    {
-                        formOptions.map(thisOption => (
-                            <ListItem key={ thisOption.optionValue }>
-                                <ListItemText primary={ thisOption.optionName } />
-                            </ListItem>
-                        ))
-                    }
-                    </List>
-
-                    <Divider />
-
+                    
                     <form noValidate autoComplete="off">
                         <TextField
 
@@ -316,6 +349,7 @@ class CreateForm extends React.Component {
                 <Divider />
                 <Paper className="demo-form-output-container">
                     <Card className={ outputContainer }>
+                        <h2>Preview</h2>
                         { demoFormTypeContainer }
                     </Card>
                 </Paper>

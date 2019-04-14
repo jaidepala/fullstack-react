@@ -5,6 +5,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const path = require("path");
 const Data = require("./data");
+const Template = require("./server/schemas/template");
 
 require('dotenv').config();
 
@@ -103,6 +104,28 @@ router.post("/putData", (req, res) => {
     response.success = true;
     return res.json( response );
   });
+});
+
+router.get("/get-form", (req, res) => {
+  	Template.find((err, data) => {
+	    if (err) return res.json({ success: false, error: err });
+	    return res.json({ success: true, data: data });
+  	});
+});
+
+router.post("/create-form", (req, res) => {
+  	let Template = new Template();
+
+	const { type, label, placeholder, helperText, options } = req.body;
+
+	// console.log('body', req.body);
+
+  	Template.save((err, response) => {
+	    if (err) return res.json({ success: false, error: err });
+
+    	response.success = true;
+    	return res.json( response );
+  	});
 });
 
 
