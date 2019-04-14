@@ -8,6 +8,7 @@ const logger = require("morgan");
 const app = express();
 const router = express.Router();
 const Data = require("./data");
+const Template = require("./server/schemas/template");
 
 var mongoDB = process.env.MONGODB_URI || "mongodb://heroku_16g77l48:12go9ld1mgc9279p2c8gog7qha@ds117846.mlab.com:17846/heroku_16g77l48";
 
@@ -93,6 +94,42 @@ router.delete("/deleteData", (req, res) => {
     const { id } = req.body;
     
     Data.findOneAndDelete(id, (err, response) => {
+        if (err) return res.send(err);
+
+        return res.json( response );
+    });
+});
+
+router.get("/get-form", (req, res) => {
+    Template.find((err, data) => {
+        if (err) return res.json({ success: false, error: err });
+        return res.json({ success: true, data: data });
+    });
+});
+
+router.post("/create-form", (req, res) => {
+    let tp = new Template();
+
+    const { type, label, placeholder, helperText, options } = req.body;
+
+    tp.type = req.body.type;
+    tp.label = req.body.label;
+    tp.placeholder = req.body.placeholder;
+    tp.helperText = req.body.helperText;
+    tp.options = req.body.options;
+
+    tp.save((err, response) => {
+        if (err) return res.json({ success: false, error: err });
+
+        response.success = true;
+        return res.json( response );
+    });
+});
+
+router.delete("/delete-form", (req, res) => {
+    const { id } = req.body;
+    
+    Template.findOneAndDelete(id, (err, response) => {
         if (err) return res.send(err);
 
         return res.json( response );

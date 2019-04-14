@@ -13,7 +13,11 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import Fab from '@material-ui/core/Fab';
+
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import List from '@material-ui/core/List';
@@ -29,6 +33,12 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // Components 
     
@@ -42,6 +52,9 @@ class CreateForm extends React.Component {
         super(props);
 
         this.state = {
+
+            list: [],
+            selectedPanel: null,
 
             formType: '',
             formLabel: '',
@@ -59,11 +72,41 @@ class CreateForm extends React.Component {
 
         this.getFormType = this.getFormType.bind(this);
         this.addOptions = this.addOptions.bind(this);
+        this.getFormData = this.getFormData.bind(this);
+        this.toggleQuestion = this.toggleQuestion.bind(this);
+        this.returnFormRender = this.returnFormRender.bind(this);
     };
 
-    getFormType() {
+    componentDidMount() {
 
-        const formType = this.state.formType && this.state.formType.toLowerCase(); 
+        this.getFormData();
+    };
+
+    getFormData() {
+
+        axios.get("api/get-form", {
+                crossdomain: true,
+                headers: {
+                  'Access-Control-Allow-Origin': '*'
+                }
+            })
+            .then(res => {
+
+                this.setState({
+
+                    list: res.data.data
+                })
+            })
+            .catch(err => {
+
+                console.log('err', err);
+            });
+    };
+
+    returnFormRender( formType ) {
+
+        if( !formType || formType === null )
+            return (<div className="no-form-container">No Form</div>);
 
         if( formType === 'input' )
         {
@@ -165,6 +208,109 @@ class CreateForm extends React.Component {
         }
     };
 
+    deleteForm = panel => {
+
+        axios.delete("api/delete-form", {
+            data: {
+                id: panel._id
+            }
+        })
+        .then(res => {
+
+            openSnackbar({
+                msg: 'Deleted Successfully!',
+                duration: 5000
+            });
+
+            this.getFormData();
+        })
+        .catch(err => {
+
+            openSnackbar({
+                msg: 'Could not delete. Please try again!',
+                actionBtn: 'Ok',
+                duration: 5000
+            });
+        });
+    };
+
+    getFormType() {
+
+        const formType = this.state.formType && this.state.formType.toLowerCase(); 
+
+        this.returnFormRender( formType );
+    };
+
+    toggleQuestion( panelId ) {
+
+        // REF:
+        // ERROR: Maximum update depth exceeded error
+        // https://stackoverflow.com/a/50201331
+
+        this.setState({
+
+            selectedPanel: (this.state.selectedPanel && this.state.selectedPanel._id === panelId._id) ? null : panelId
+        });
+    };
+
+    renderFormList( list ) {
+
+        if(!list || list.length === 0)
+            return;
+        
+        const { selectedPanel } = this.state;
+        
+        return (
+            <div className="questionnaire-container">
+                {
+                    list.map((thisOption, thisOptionIndex) => (
+                        <ExpansionPanel 
+                            key={ thisOption._id }
+                            expanded={ selectedPanel && selectedPanel._id ===  thisOption._id } 
+                            onChange={ (evt) => this.toggleQuestion( thisOption ) }>
+
+                            <ExpansionPanelSummary expandIcon={ <ExpandMoreIcon /> }>
+
+                                <Typography>
+                                    Question { (thisOptionIndex+1) }
+                                </Typography>
+
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
+                                { 
+                                    this.returnFormRender( thisOption && thisOption.type ) 
+                                }
+                            </ExpansionPanelDetails>
+                            <Divider />
+                                <ExpansionPanelActions>
+                                    <Button 
+                                        variant="contained" 
+                                        color="secondary"
+                                        onClick={() => this.deleteForm( thisOption )} 
+                                        size="small">
+
+                                        Delete
+                                                    
+                                        <DeleteIcon />
+                                    </Button>
+                                    <Button 
+                                        variant="contained"  
+                                        color="primary"
+                                        size="small">
+
+                                        Edit
+                                                    
+                                        <EditIcon />
+
+                                    </Button>
+                                </ExpansionPanelActions>
+                        </ExpansionPanel>
+                    ))
+                }
+            </div>
+        );
+    };
+
     addOptions() {
 
         var allOptions = this.state.formOptions;
@@ -207,18 +353,25 @@ class CreateForm extends React.Component {
     saveFormDetails() {
 
         let msObj = {
-
+            type: this.state.formType,
+            label: this.state.formLabel,
+            placeholder: this.state.formPlaceholder,
+            helperText: this.state.formHelpertext,
+            options: this.state.formOptions
         };
 
-        axios.post("api/create-form", {
-            template: {
-                type: 'input',
-                label: 'Enter your name: ',
-                placeholder: '',
-                helperText: '',
-                options: null
-            }
-        })
+        if( !msObj.type || msObj.type === null )
+        {
+            openSnackbar({
+                msg: 'Please select a form type!',
+                actionBtn: 'Ok',
+                duration: 5000
+            });
+
+            return false;
+        };
+
+        axios.post("api/create-form", msObj)
         .then(res => {
 
             if( res && res != null )
@@ -228,6 +381,8 @@ class CreateForm extends React.Component {
                     actionBtn: 'Ok',
                     duration: 5000
                 });
+
+                this.getFormData();
             }
         })
         .catch(err => {
@@ -239,9 +394,16 @@ class CreateForm extends React.Component {
     render() {
 
         let demoFormTypeContainer = this.getFormType();
+        let questionnaireContainer = this.renderFormList( this.state.list );
+
         let { formType } = this.state;
         let showOptions = (formType === 'radio' || formType === 'checkbox' || formType === 'select');
         let { formOptions } = this.state;
+
+        let showQuestionnaire = classNames({
+            'show add-questions-container': questionnaireContainer, 
+            'hide': !questionnaireContainer 
+        });
 
         let showOptionClass = classNames({
             'show add-data-container': showOptions, 
@@ -351,6 +513,12 @@ class CreateForm extends React.Component {
                     <Card className={ outputContainer }>
                         <h2>Preview</h2>
                         { demoFormTypeContainer }
+                    </Card>
+                </Paper>
+                <Paper className="demo-form-output-container">
+                    <Card className={ showQuestionnaire }>
+                        <h2>Questions</h2>
+                        { questionnaireContainer }
                     </Card>
                 </Paper>
                 <AppSnackBar />

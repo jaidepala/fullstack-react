@@ -106,28 +106,6 @@ router.post("/putData", (req, res) => {
   });
 });
 
-router.get("/get-form", (req, res) => {
-  	Template.find((err, data) => {
-	    if (err) return res.json({ success: false, error: err });
-	    return res.json({ success: true, data: data });
-  	});
-});
-
-router.post("/create-form", (req, res) => {
-  	let Template = new Template();
-
-	const { type, label, placeholder, helperText, options } = req.body;
-
-	// console.log('body', req.body);
-
-  	Template.save((err, response) => {
-	    if (err) return res.json({ success: false, error: err });
-
-    	response.success = true;
-    	return res.json( response );
-  	});
-});
-
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.

@@ -5,10 +5,10 @@ const Schema = mongoose.Schema;
 const TemplateSchema = new Schema(
   	{
 	    type: String,
-    	label?: String,
-    	placeholder?: String,
-    	helperText?: String,
-    	options?: Array
+    	label: String,
+    	placeholder: String,
+    	helperText: String,
+    	options: Array
   	},
   	{ 
   		timestamps: true 
