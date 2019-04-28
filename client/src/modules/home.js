@@ -150,7 +150,6 @@ class Home extends React.Component {
         });
     };
 
-
     // our delete method that uses our backend api 
     // to remove existing database information
     deleteFromDB = idTodelete => {

@@ -44,16 +44,18 @@ class AppSnackBar extends React.Component {
 			
 			this.setState({
 				messageInfo: this.queue.shift(),
-				open: true,
+				open: true
 			});
 		}
 	};
 
 	handleClick = ( snackbarConfig ) => {
 		
-		let duration = snackbarConfig.duration;
-		let msg = snackbarConfig.msg;
-		let actionBtn = snackbarConfig.actionBtn;
+		// let duration = snackbarConfig.duration;
+		// let msg = snackbarConfig.msg;
+		// let actionBtn = snackbarConfig.actionBtn;
+
+		let { duration, msg, actionBtn } = snackbarConfig;
 
 	    this.queue.push({
 			duration: duration,
@@ -70,10 +72,11 @@ class AppSnackBar extends React.Component {
 	  			open: false 
 	      	});
 
-	    } else {
+	    // } else {
 	      
-      		this.processQueue();
 	    }
+  		
+  		this.processQueue();
 	};
 
 	handleClose = (event, reason) => {

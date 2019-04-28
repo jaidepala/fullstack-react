@@ -107,6 +107,16 @@ router.get("/get-form", (req, res) => {
     });
 });
 
+router.get("/get-form-details/:id", (req, res) => {
+
+    const { id } = req.params;
+    
+    Template.findOne({ id: id }, (err, data) => {
+        if (err) return res.json({ success: false, error: err });
+        return res.json({ success: true, data: data });
+    });
+});
+
 router.post("/create-form", (req, res) => {
     let tp = new Template();
 

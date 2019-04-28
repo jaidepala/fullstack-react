@@ -21,11 +21,14 @@ import ListItem 	from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton 	from '@material-ui/core/IconButton';
 import MenuIcon 	from "@material-ui/icons/Menu";
+// import ArrowBackIcon 	from "@material-ui/icons/ArrowBack";
 
 // MODULES
     import Home 		from "../modules/home";
     import About 		from "../modules/about";
     import CreateForm 	from "../modules/create-form";
+    import GetForm 		from "../modules/get-form";
+    import QuestionnaireCreator 		from "../modules/questionnaire-creator";
 
 class Header extends React.Component {
 
@@ -36,11 +39,21 @@ class Header extends React.Component {
 		this.state = {
 			classes: props,
 			top: false,
+			title: 'My App',
 			left: false,
 			bottom: false,
 			right: false,
 		};
 	};
+
+	// changeTitle( title = 'My App' ) {
+
+	// 	console.log('title', title);
+
+	// 	this.setState({
+	// 		title: title
+	// 	});
+	// };
 
 	toggleDrawer = (side, open) => () => {
 		this.setState({
@@ -49,13 +62,8 @@ class Header extends React.Component {
 	};
 
 	render(props) {
-	  	// {['Home', 'Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-			// 	<Link to="/" key={text}>
-	      //   	<ListItem button style="text-decoration: none;">
-		     //      		<ListItemText primary={text} />
-	      //   	</ListItem>
-	// 		</Link>
-	  	// ))}
+
+		const { title } = this.state;
 
 		const sideList = (
 		  	<div>
@@ -75,6 +83,11 @@ class Header extends React.Component {
 				          		<ListItemText primary="Create Form" />
 			        	</ListItem>
 		    		</Link>
+		    		<Link className="menu-link" to="/create-questionnaire">
+			        	<ListItem button style={{"textDecoration": "none"}}>
+				          		<ListItemText primary="Create Questions" />
+			        	</ListItem>
+		    		</Link>
 		    	</List>
 			    <Divider />
 			    <List>
@@ -88,6 +101,7 @@ class Header extends React.Component {
 			    </List>
 		  	</div>
 		);
+		// <ArrowBackIcon />
 
 		return (
 			<Router className={this.state.classes.root}>
@@ -98,14 +112,14 @@ class Header extends React.Component {
 							className={this.state.classes.menuButton}
 							onClick={this.toggleDrawer('left', true)}
 							aria-label="Menu">
-							
+
 							<MenuIcon />
 						</IconButton>
 						<Typography 
 							variant="h6" 
 							className={this.state.classes.grow}
 							color="inherit">
-							My App
+							{ title }
 						</Typography>
 					</Toolbar>
 				</AppBar>
@@ -123,7 +137,9 @@ class Header extends React.Component {
 	                
 	                <Route exact path="/" component={Home} />
 	                <Route path="/about" component={About} />
+	                <Route path="/form/:formid" component={GetForm} />
 	                <Route path="/create-form" component={CreateForm} />
+	                <Route path="/create-questionnaire" component={QuestionnaireCreator} />
 				</div>
 			</Router>
 		);

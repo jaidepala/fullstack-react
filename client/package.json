@@ -10,7 +10,8 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.8"
+    "react-scripts": "2.1.8",
+    "uuid-random": "^1.0.8"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -21,7 +22,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://localhost:5000",
+
   "browserslist": [
     ">0.2%",
     "not dead",

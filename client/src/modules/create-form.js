@@ -20,9 +20,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+// import List from '@material-ui/core/List';
+// import ListItem from '@material-ui/core/ListItem';
+// import ListItemText from '@material-ui/core/ListItemText';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
@@ -51,6 +51,8 @@ class CreateForm extends React.Component {
 
         super(props);
 
+        console.log('props', this.props);
+
         this.state = {
 
             list: [],
@@ -64,10 +66,7 @@ class CreateForm extends React.Component {
             formOptionLabel: '',
             formOptionValue: '',
             formOptionSelected: '',
-            formOptions: [{
-                optionValue: 1,
-                optionName: '1'
-            }],
+            formOptions: []
         };
 
         this.getFormType = this.getFormType.bind(this);
@@ -92,10 +91,7 @@ class CreateForm extends React.Component {
             })
             .then(res => {
 
-                this.setState({
 
-                    list: res.data.data
-                })
             })
             .catch(err => {
 
@@ -313,19 +309,20 @@ class CreateForm extends React.Component {
 
     addOptions() {
 
-        var allOptions = this.state.formOptions;
+        // var allOptions = this.state.formOptions;
 
-        let { formOptionLabel } = this.state;
-        let { formOptionValue } = this.state;
+        // let { formOptionLabel, formOptionValue, formOptions } = this.state;
+        let { formOptionLabel, formOptions } = this.state;
 
-        if( !formOptionValue || !formOptionLabel ) {
+        // if( !formOptionValue || !formOptionLabel ) {
+        if( !formOptionLabel ) {
 
             let msg = '';
 
             if( !formOptionLabel )
-                msg = 'Please enter name.'
+                msg = 'Please enter name.';
             else
-                msg = 'Please enter value.'
+                msg = 'Please enter value.';
 
             openSnackbar({
                 msg: msg,
@@ -336,18 +333,38 @@ class CreateForm extends React.Component {
             // this.state.snackbar.handleClick();
             return false;
         }
+        else
+        {
+            for(var i = 0, len = formOptions.length; i < len; i++) {
+                var thisFormOption = formOptions[i];
 
-        allOptions.push({
-            optionValue: formOptionValue,
+                if ( thisFormOption && thisFormOption.optionName && thisFormOption.optionName.trim().toLowerCase() === formOptionLabel.trim().toLowerCase() ) {
+
+                    openSnackbar({
+                        msg: 'Label already exists.',
+                        actionBtn: 'Ok',
+                        duration: 5000
+                    });
+
+                    return false;
+                }
+            };
+        }
+
+        formOptions.push({
+            // optionValue: formOptionValue,
+            optionValue: formOptions.length,
             optionName: formOptionLabel
         });
 
         this.setState({
-            formOptionLabel: '',
-            formOptionValue: allOptions.length,
-            formOptionSelected: formOptionValue,
-            formOptions: allOptions
+            formOptionLabel: null,
+            formOptionValue: formOptions.length,
+            formOptionSelected: formOptions.length,
+            formOptions: formOptions
         });
+
+        console.log('state', this.state);
     };
 
     saveFormDetails() {
@@ -417,78 +434,82 @@ class CreateForm extends React.Component {
 
     	return (
     		<Paper className="create-form-container">
-                <FormControl className="show">
-                    <div className="input-container">
-                        <InputLabel htmlFor="form-type">
-                            Select Form Type
-                        </InputLabel>
-                        <Select
-                            fullWidth 
-                            value={ this.state.formType }
-                            onChange={e => this.setState({ formType: e.target.value })}
-                            input={<Input name="form-type" id="form-type" />}>
+                <Card>
+                    <FormControl className="show">
+                        <div className="input-container">
+                            <InputLabel htmlFor="form-type">
+                                Select Form Type
+                            </InputLabel>
+                            <Select
+                                fullWidth 
+                                value={ this.state.formType }
+                                onChange={e => this.setState({ formType: e.target.value })}
+                                input={<Input name="form-type" id="form-type" />}>
 
-                            <MenuItem value={'input'}>Input</MenuItem>
-                            <MenuItem value={'select'}>Select</MenuItem>
-                            <MenuItem value={'textarea'}>TextArea</MenuItem>
-                            <MenuItem value={'checkbox'}>Checkbox</MenuItem>
-                            <MenuItem value={'radio'}>Radio</MenuItem>
-                        </Select>
-                    </div>
-                    <div className="input-container">
-                        <TextField
-                            id="form-label" 
-                            label="Add a label for your form..." 
-                            margin="normal" 
-                            type="search" 
-                            onChange={e => this.setState({ formLabel: e.target.value })} 
-                            fullWidth />
-                    </div>
-                    <div className="input-container">
-                        <TextField
-                            id="form-placeholder" 
-                            label="Add a Placeholder for your form..." 
-                            margin="normal" 
-                            type="search" 
-                            onChange={e => this.setState({ formPlaceholder: e.target.value })} 
-                            fullWidth />
-                    </div>
-                    <div className="input-container">
-                        <TextField
-                            id="form-helpertext" 
-                            label="Add a Helpertext for your form..." 
-                            margin="normal" 
-                            type="search" 
-                            onChange={e => this.setState({ formHelpertext: e.target.value })} 
-                            fullWidth />
-                    </div>
-                    <div className="submit-container">
+                                <MenuItem value={'input'}>Input</MenuItem>
+                                <MenuItem value={'select'}>Select</MenuItem>
+                                <MenuItem value={'textarea'}>TextArea</MenuItem>
+                                <MenuItem value={'checkbox'}>Checkbox</MenuItem>
+                                <MenuItem value={'radio'}>Radio</MenuItem>
+                            </Select>
+                        </div>
+                        <div className="input-container">
+                            <TextField
+                                id="form-label" 
+                                label="Add a label for your form..." 
+                                margin="normal" 
+                                type="search" 
+                                onChange={e => this.setState({ formLabel: e.target.value })} 
+                                fullWidth />
+                        </div>
+                        <div className="input-container">
+                            <TextField
+                                id="form-placeholder" 
+                                label="Add a Placeholder for your form..." 
+                                margin="normal" 
+                                type="search" 
+                                onChange={e => this.setState({ formPlaceholder: e.target.value })} 
+                                fullWidth />
+                        </div>
+                        <div className="input-container">
+                            <TextField
+                                id="form-helpertext" 
+                                label="Add a Helpertext for your form..." 
+                                margin="normal" 
+                                type="search" 
+                                onChange={e => this.setState({ formHelpertext: e.target.value })} 
+                                fullWidth />
+                        </div>
+                        <div className="submit-container">
 
-                        <Button 
-                                variant="contained" 
-                                size="large" 
-                                onClick={() => this.saveFormDetails()}
-                                fullWidth
-                                color="primary">
+                            <Button 
+                                    variant="contained" 
+                                    size="large" 
+                                    onClick={() => this.saveFormDetails()}
+                                    fullWidth
+                                    color="primary">
 
-                            Save
-                        </Button>
-                    </div>
-                </FormControl>
+                                Save
+                            </Button>
+                        </div>
+                    </FormControl>
+                </Card>
                 <Card 
                     className={ showOptionClass }>
                     
                     <form noValidate autoComplete="off">
                         <TextField
 
-                            placeholder="Add an option label"
+                            placeholder="Add options"
                             margin="none"
+                            value={ this.state.formOptionLabel || '' }
                             onChange={e => this.setState({ formOptionLabel: e.target.value })}
                             variant="outlined"
                             fullWidth />
 
                         <TextField
 
+                            className="hide"
                             placeholder="Add an option value"
                             margin="none"
                             onChange={e => this.setState({ formOptionValue: e.target.value })}
@@ -505,22 +526,37 @@ class CreateForm extends React.Component {
                                 <AddIcon />
                             </Fab>
                         </div>
+                        <div className="option-container">
+                            {
+                                formOptions.map(( thisOption, thisOptionIndex ) => (
+
+                                    <FormControlLabel
+                                        className="form-selection-container"
+                                        key={ thisOption.optionValue } 
+                                        control={
+                                            (<Radio
+                                                value={ thisOption.optionValue }
+                                                name="radio-button-demo"
+                                                checked={ this.state.formOptionSelected === thisOption.optionValue }
+                                                onChange={e => this.setState({ formOptionSelected: e.value })}  />)
+                                        }
+                                        label={ thisOption.optionName }>
+                                    </FormControlLabel>
+                                ))
+                            }
+                        </div>
                     </form>
 
                 </Card>
                 <Divider />
-                <Paper className="demo-form-output-container">
-                    <Card className={ outputContainer }>
-                        <h2>Preview</h2>
-                        { demoFormTypeContainer }
-                    </Card>
-                </Paper>
-                <Paper className="demo-form-output-container">
-                    <Card className={ showQuestionnaire }>
-                        <h2>Questions</h2>
-                        { questionnaireContainer }
-                    </Card>
-                </Paper>
+                <Card className={ outputContainer }>
+                    <h2>Preview</h2>
+                    { demoFormTypeContainer }
+                </Card>
+                <Card className={ showQuestionnaire }>
+                    <h2 className="container-title">Questions</h2>
+                    { questionnaireContainer }
+                </Card>
                 <AppSnackBar />
             </Paper>
         );
