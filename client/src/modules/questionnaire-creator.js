@@ -39,7 +39,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 
 // Components 
     
@@ -93,10 +93,59 @@ class QuestionnaireCreator extends React.Component {
         this.addQuestion            = this.addQuestion.bind(this);
         this.createShareOptions     = this.createShareOptions.bind(this);
         this.resetForm              = this.resetForm.bind(this);
-		this.returnOptionName 		= this.returnOptionName.bind(this);
+        this.returnOptionName       = this.returnOptionName.bind(this);
+		this.updateOptionValue 		= this.updateOptionValue.bind(this);
        
         // console.log('styles', styles);
 	};
+
+    updateOptionValue(evt, formObj, preview) {
+
+        if( preview && preview != null )
+        {
+            // let previwl
+            // console.log('previw', preview);
+
+            let previewObj = this.state.preview.map( (thisPreviewQuestion) => {
+                if(thisPreviewQuestion.uuid === formObj.uuid) {
+
+                    thisPreviewQuestion.optionValue = evt.target.value;
+                }
+
+                return thisPreviewQuestion;
+            });
+
+            console.log('previewObj', previewObj);
+
+            this.setState({
+                preview: previewObj//{
+                    // ...this.state.preview,
+                    // preview: 
+
+                // }
+            });
+        
+            // console.log('previewObj', previewObj);
+            // this.setState({
+            //     preview: this.state.preview.map((thisPreviewQuestion) => {
+            //         if ( thisPreviewQuestion && thisPreviewQuestion.uuid === formObj.uuid ) {
+            //             thisPreviewQuestion.optionValue = evt.target.value;
+            //         }
+            //     })
+            // });
+        }
+        else
+        {
+            this.setState({
+
+                question: {
+                    ...this.state.question,
+                    optionValue: evt.target.value
+                }
+            });
+        }
+
+    };
 
     returnFormRender( formObj, preview? ) {
 
@@ -104,7 +153,7 @@ class QuestionnaireCreator extends React.Component {
     	// will have 
     	// label, value
 
-    	let { label, type, placeholder, helper, options, value, question, optionValue } = formObj;
+    	let { label, type, placeholder, helper, options, question, optionValue } = formObj;
 
         if( !question || question == null ) {
             return false;
@@ -120,10 +169,8 @@ class QuestionnaireCreator extends React.Component {
                     <TextField
                         label={ label }
                         placeholder={ placeholder } 
-                        onChange={( evt ) => { 
-                                formObj.optionValue = evt.target.value 
-                            }
-                        }
+                        value={ formObj.optionValue || "" } 
+                        onBlur={ (evt) => this.updateOptionValue( evt, formObj, preview ) }
                         helperText={ helper } 
                         fullWidth
                         variant="filled" />
@@ -140,42 +187,7 @@ class QuestionnaireCreator extends React.Component {
                     <Select 
                         fullWidth
                         value={ formObj.optionValue || "" }
-                        onChange={(evt) => {
-                                // formObj.optionValue = evt.target.value;
-
-                                if( preview && preview != null )
-                                {
-                                    // let previwl
-                                    // console.log('previw', preview);
-
-                                    this.setState({
-                                        question: {
-                                            ...this.state.question,
-                                            preview: preview.map( (thisPreviewQuestion) => {
-                                                if(thisPreviewQuestion.uuid == formObj.uuid) {
-
-                                                    thisPreviewQuestion.optionValue = evt.target.value;
-                                                }
-
-                                                return thisPreviewQuestion;
-                                            })
-                                        }
-                                    });
-                                }
-                                else
-                                {
-                                    this.setState({
-
-                                        question: {
-                                            ...this.state.question,
-                                            optionValue: evt.target.value
-                                        }
-                                    });
-                                }
-
-                                // console.log('optionValue', formObj, optionValue);
-                            }
-                        }
+                        onChange={ (evt) => this.updateOptionValue( evt, formObj, preview ) }
                         input={<Input 
                             name={ thisUuid } 
                             id={ thisUuid }   />
@@ -202,10 +214,8 @@ class QuestionnaireCreator extends React.Component {
                 <div className="demo-select-container">
                     <TextField
                         label={ label }
-                        onChange={( evt ) => { 
-                                formObj.optionValue = evt.target.value 
-                            }
-                        }
+                        value={ formObj.optionValue || "" }
+                        onChange={ (evt) => this.updateOptionValue( evt, formObj, preview ) }
                         placeholder={ placeholder } 
                         helperText={ helper } 
                         fullWidth
@@ -243,10 +253,7 @@ class QuestionnaireCreator extends React.Component {
                                             key={ thisOption.optionValue } 
                                             value={ thisOption.optionValue }
                                             name={ newUuid }
-					                        onChange={( evt ) => { 
-                                                    formObj.optionValue = evt.target.value 
-                                                }
-                                            } />
+					                        onChange={ (evt) => this.updateOptionValue( evt, formObj, preview ) } />
 					                	)
                                     }
                                     label={ thisOption.optionName }>
@@ -475,6 +482,18 @@ class QuestionnaireCreator extends React.Component {
 						: 
 						''
     			}
+                <div className="submit-container">
+
+                    <Button 
+                            variant="contained" 
+                            size="large" 
+                            onClick={() => this.addQuestion()}
+                            fullWidth
+                            color="primary">
+
+                        Add <AddIcon />
+                    </Button>
+                </div>
     		</div>
 		);
     };
@@ -503,7 +522,7 @@ class QuestionnaireCreator extends React.Component {
 
 		const { preview } = this.state;
 
-		if( !preview || preview.length == 0 )
+		if( !preview || preview.length === 0 )
 			return;
 
         // const { classes } = this.props;
@@ -513,14 +532,14 @@ class QuestionnaireCreator extends React.Component {
                 {
                     preview.map(( thisPreviewQuestion, thisPreviewQuestionIndex ) => {
 
-                            let previewAnswer = thisPreviewQuestion.optionValue;
+                            // let previewAnswer = thisPreviewQuestion.optionValue;
 
-                            let showValue = classNames({ 
-                                'hide': !previewAnswer, 
-                                'show': previewAnswer  
-                            });
+                            // let showValue = classNames({ 
+                            //     'hide': !previewAnswer, 
+                            //     'show': previewAnswer  
+                            // });
 
-                            thisPreviewQuestion.uuid = uuid();
+                            thisPreviewQuestion['uuid'] = uuid();
 
                             return (
                                 <ExpansionPanel key={ thisPreviewQuestion.uuid } >
@@ -563,19 +582,6 @@ class QuestionnaireCreator extends React.Component {
 				{
 					questionPreviewContainer
 				}
-                
-                <div className="submit-container">
-
-                    <Button 
-                            variant="contained" 
-                            size="large" 
-                        	onClick={() => this.addQuestion()}
-                            fullWidth
-                            color="primary">
-
-                        Save
-                    </Button>
-                </div>
 			</div>
 		);
 	};
@@ -588,10 +594,10 @@ class QuestionnaireCreator extends React.Component {
 				renderPreviewDiv = renderPreview(), 
 				renderQuestionnaireDiv = renderQuestionnaire();
 
-        let renderSelectionClassName = classNames({
-            'show react-container': renderSelectionDiv, 
-            'hide': !renderSelectionDiv 
-        });
+        // let renderSelectionClassName = classNames({
+        //     'show react-container': renderSelectionDiv, 
+        //     'hide': !renderSelectionDiv 
+        // });
 
         let renderPreviewClassName = classNames({
             'show react-container': renderPreviewDiv, 
@@ -609,12 +615,6 @@ class QuestionnaireCreator extends React.Component {
 					<h2 className="container-title"> Selection </h2>
 					{ 
 						renderSelection()
-					}
-				</Card>
-				<Card className={ renderPreviewClassName }>
-					<h2 className="container-title"> Preview </h2>
-					{ 
-						renderPreview()
 					}
 				</Card>
 				<Card className={ renderQuestionnaireClassName }>
