@@ -10,6 +10,12 @@ body {
     padding: 0px 15px;
 }
 
+.expansion-panel-answer {
+    padding-left: 50px;
+    color: #696969;
+    font-weight: bold;
+}
+
 .show {
     display: block!important;
 }

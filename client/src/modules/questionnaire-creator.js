@@ -18,6 +18,7 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
+import ShareIcon from '@material-ui/icons/Share';
 import Fab from '@material-ui/core/Fab';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -45,29 +46,6 @@ import { withStyles } from '@material-ui/core/styles';
     import AppSnackBar, { openSnackbar } from '../components/app.snackbar';
     // import Util from '../components/util';
 
-// const styles = theme => ({
-//         root: {
-//             width: '100%',
-//             color: 'inherit',
-//             textDecoration: 'inherit',
-//             '&:hover': {
-//             textDecoration: 'underline',
-//         },
-//     },
-//     primary: {
-//         color: theme.palette.primary.main,
-//     },
-//     heading: {
-//         fontSize: theme.typography.pxToRem(15),
-//         flexBasis: '33.33%',
-//         flexShrink: 0,
-//     },
-//     secondaryHeading: {
-//         fontSize: theme.typography.pxToRem(15),
-//         color: theme.palette.text.secondary,
-//     }
-// });
-
 class QuestionnaireCreator extends React.Component {
 
 	constructor( props ) {
@@ -79,7 +57,8 @@ class QuestionnaireCreator extends React.Component {
 			question: {
 
 				type: '',
-				label: '',
+                label: '',
+				question: '',
 				helper: '',
 				placeholder: '',
 				optionName: '',
@@ -112,18 +91,25 @@ class QuestionnaireCreator extends React.Component {
 		this.renderQuestionnaire 	= this.renderQuestionnaire.bind(this);
 		this.addOptions 			= this.addOptions.bind(this);
         this.addQuestion            = this.addQuestion.bind(this);
-		this.resetForm 			    = this.resetForm.bind(this);
+        this.createShareOptions     = this.createShareOptions.bind(this);
+        this.resetForm              = this.resetForm.bind(this);
+		this.returnOptionName 		= this.returnOptionName.bind(this);
        
         // console.log('styles', styles);
 	};
 
-    returnFormRender( formObj ) {
+    returnFormRender( formObj, preview? ) {
 
     	// formObj
     	// will have 
     	// label, value
 
-    	let { label, type, placeholder, helper, options, value } = formObj;
+    	let { label, type, placeholder, helper, options, value, question, optionValue } = formObj;
+
+        if( !question || question == null ) {
+            return false;
+        }
+
     	const thisUuid = uuid();
         const newUuid = uuid();
 
@@ -149,15 +135,58 @@ class QuestionnaireCreator extends React.Component {
             return (
                 <div className="demo-select-container">
                     <InputLabel htmlFor={thisUuid}>
-                        { label }
+                        { label } 
                     </InputLabel>
-                    <Select
-                        fullWidth 
-                        input={<Input name={thisUuid} id={thisUuid} value={ formObj.optionValue || '' } />}>
+                    <Select 
+                        fullWidth
+                        value={ formObj.optionValue || "" }
+                        onChange={(evt) => {
+                                // formObj.optionValue = evt.target.value;
+
+                                if( preview && preview != null )
+                                {
+                                    // let previwl
+                                    // console.log('previw', preview);
+
+                                    this.setState({
+                                        question: {
+                                            ...this.state.question,
+                                            preview: preview.map( (thisPreviewQuestion) => {
+                                                if(thisPreviewQuestion.uuid == formObj.uuid) {
+
+                                                    thisPreviewQuestion.optionValue = evt.target.value;
+                                                }
+
+                                                return thisPreviewQuestion;
+                                            })
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    this.setState({
+
+                                        question: {
+                                            ...this.state.question,
+                                            optionValue: evt.target.value
+                                        }
+                                    });
+                                }
+
+                                // console.log('optionValue', formObj, optionValue);
+                            }
+                        }
+                        input={<Input 
+                            name={ thisUuid } 
+                            id={ thisUuid }   />
+                        }>
                         
                         {
                             options.map(thisOption => (
-                                <MenuItem key={ thisOption.optionValue } value={ thisOption.optionValue }>
+                                <MenuItem 
+                                    key={ thisOption.optionValue } 
+                                    value={ thisOption.optionValue }>
+
                                     { thisOption.optionName }
                                 </MenuItem>
                             ))
@@ -235,6 +264,8 @@ class QuestionnaireCreator extends React.Component {
 
     	let { preview, question } = this.state;
 
+        question.optionValue = null;
+
     	preview.push( question );
 
     	this.setState({
@@ -304,6 +335,13 @@ class QuestionnaireCreator extends React.Component {
         console.log('state', this.state);
     };
 
+    createShareOptions() {
+
+        const { preview } = this.state;
+
+        console.log('preview', preview);
+    };
+
     resetForm() {
 
         this.setState({
@@ -311,6 +349,7 @@ class QuestionnaireCreator extends React.Component {
             question: {
                 ...this.state.question,
                 type: '',
+                question: '',
                 label: '',
                 helper: '',
                 placeholder: '',
@@ -327,11 +366,11 @@ class QuestionnaireCreator extends React.Component {
 
     	return (
     		<div className="selection-container">
-    			<FormControl fullWidth>
+    			<FormControl fullWidth margin="normal">
 	                <InputLabel htmlFor="question-type">
 	                    Select Question Type
 	                </InputLabel>
-	                <Select
+	                <Select 
 	                	value={ this.state.question.type }
 	                    onChange={evt => this.setState({
 	                    		question: {
@@ -351,6 +390,19 @@ class QuestionnaireCreator extends React.Component {
 	                    }
 	                </Select>
     			</FormControl>
+                <FormControl fullWidth margin="normal">
+                    <TextField
+                        id="question" 
+                        label="What's your question..." 
+                        type="search" 
+                        onChange={evt => this.setState({
+                                question: {
+                                    ...this.state.question, 
+                                    question: evt.target.value 
+                                }
+                            })
+                        } />
+                </FormControl>
     			<FormControl fullWidth margin="normal">
                     <TextField
                         id="question-label" 
@@ -427,11 +479,31 @@ class QuestionnaireCreator extends React.Component {
 		);
     };
 
+    returnOptionName( options, selectionOption ) {
+        if(!selectionOption || selectionOption == null) return false;
+
+        let answer = options.find( (thisOption) => {
+
+            // console.log('thisOption', thisOption.optionValue, selectionOption);
+            if( thisOption.optionValue === selectionOption ) {
+
+                // console.log('selection', thisOption);
+                return thisOption;
+            }
+        });
+
+        if(!answer)
+            return false;
+
+        // console.log('answer', answer);
+        return answer.optionName;
+    };
+
 	renderQuestionnaire() {
 
 		const { preview } = this.state;
 
-		if( !preview || preview == null )
+		if( !preview || preview.length == 0 )
 			return;
 
         // const { classes } = this.props;
@@ -439,29 +511,33 @@ class QuestionnaireCreator extends React.Component {
 		return (
             <div className="questionnaire-preview-container">
                 {
-                    preview.map(( thisPreviewQuesion, thisPreviewQestionIndex ) => {
+                    preview.map(( thisPreviewQuestion, thisPreviewQuestionIndex ) => {
 
-                            let previewAnswer = thisPreviewQuesion.optionValue;
+                            let previewAnswer = thisPreviewQuestion.optionValue;
 
                             let showValue = classNames({ 
                                 'hide': !previewAnswer, 
                                 'show': previewAnswer  
                             });
 
+                            thisPreviewQuestion.uuid = uuid();
+
                             return (
-                                <ExpansionPanel key={ uuid() } >
+                                <ExpansionPanel key={ thisPreviewQuestion.uuid } >
                                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 
                                         <Typography>
-                                            { thisPreviewQuesion.label }
+                                            { thisPreviewQuestion.question }
                                         </Typography>
-                                        <Typography>
-                                            { thisPreviewQuesion.optionValue }
-                                        </Typography>
+                                        <span className="expansion-panel-answer">
+                                            { 
+                                                 this.returnOptionName( thisPreviewQuestion.options, thisPreviewQuestion.optionValue )
+                                            }
+                                        </span>
                                     </ExpansionPanelSummary>                
                                     <ExpansionPanelDetails>
                                         {
-                                            this.returnFormRender( thisPreviewQuesion )
+                                            this.returnFormRender( thisPreviewQuestion, preview )
                                         }
                                     </ExpansionPanelDetails>
                                 </ExpansionPanel>
@@ -546,6 +622,20 @@ class QuestionnaireCreator extends React.Component {
 					{ 
 						renderQuestionnaire()
 					}
+                    <div className="submit-container">
+
+                        <Button 
+                                variant="contained" 
+                                size="large" 
+                                onClick={() => this.createShareOptions()}
+                                fullWidth
+                                color="primary">
+
+                            Share 
+
+                            <ShareIcon />
+                        </Button>
+                    </div>
 				</Card>
                 <AppSnackBar />
 			</div>
