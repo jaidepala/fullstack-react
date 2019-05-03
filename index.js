@@ -120,13 +120,15 @@ router.get("/get-form-details/:id", (req, res) => {
 router.post("/create-form", (req, res) => {
     let tp = new Template();
 
-    const { type, label, placeholder, helperText, options } = req.body;
+    let { preview } = req.body;
 
-    tp.type = req.body.type;
-    tp.label = req.body.label;
-    tp.placeholder = req.body.placeholder;
-    tp.helperText = req.body.helperText;
-    tp.options = req.body.options;
+    tp['preview'] = preview;
+    // tp.label = req.body.label;
+    // tp.placeholder = req.body.placeholder;
+    // tp.helperText = req.body.helperText;
+    // tp.options = req.body.options;
+
+    console.log('preview\n\n', tp, '\n\n', req.body.preview, '\n\n');
 
     tp.save((err, response) => {
         if (err) return res.json({ success: false, error: err });

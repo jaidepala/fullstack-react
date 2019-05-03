@@ -2,6 +2,9 @@ import React from "react";
 // REF:
 // https://www.npmjs.com/package/uuid-random	
 import uuid from 'uuid-random';
+// REF:
+// https://github.com/kolodny/immutability-helper
+import update from 'immutability-helper';
 
 // import ReactDOM from "react-dom";
 
@@ -56,31 +59,31 @@ class QuestionnaireCreator extends React.Component {
 
 			question: {
 
-				type: '',
+				questiontype: '',
                 label: '',
 				question: '',
 				helper: '',
 				placeholder: '',
 				optionName: '',
 				optionValue: '',
-				options: [],
-				typeOfForm: [{
-					optionName: 'Input',
-					optionValue: 'input'
-				},{
-					optionName: 'Select',
-					optionValue: 'select'
-				},{
-                    optionName: 'Textarea',
-                    optionValue: 'textarea'
-                },,{
-					optionName: 'Checkbox',
-					optionValue: 'checkbox'
-				},{
-					optionName: 'Radio',
-					optionValue: 'radio'
-				}]
+				options: []
 			},
+            typeOfForm: [{
+                optionName: 'Input',
+                optionValue: 'input'
+            },{
+                optionName: 'Select',
+                optionValue: 'select'
+            },{
+                optionName: 'Textarea',
+                optionValue: 'textarea'
+            },,{
+                optionName: 'Checkbox',
+                optionValue: 'checkbox'
+            },{
+                optionName: 'Radio',
+                optionValue: 'radio'
+            }],
 
 			preview: []
 		};
@@ -105,25 +108,58 @@ class QuestionnaireCreator extends React.Component {
         {
             // let previwl
             // console.log('previw', preview);
+            let ind = null;
+            // let previewObj = this.state.preview.map( (thisPreviewQuestion, thisPreviewQuestionIndex) => {
+            //     if(thisPreviewQuestion.uuid === formObj.uuid) {
 
-            let previewObj = this.state.preview.map( (thisPreviewQuestion) => {
+            //         ind = thisPreviewQuestionIndex;
+            //         thisPreviewQuestion.optionValue = evt.target.value;
+            //     }
+
+            //     return thisPreviewQuestion;
+            // });
+            let updatedPreviewObj = null;
+            for(var i = 0, len = this.state.preview.length; i < len; i++) {
+                var thisPreviewQuestion = this.state.preview[i];
+                
                 if(thisPreviewQuestion.uuid === formObj.uuid) {
+                    ind = i;
+                    thisPreviewQuestion['optionValue'] = evt.target.value;
 
-                    thisPreviewQuestion.optionValue = evt.target.value;
+                    updatedPreviewObj = thisPreviewQuestion;
+
+                    // console.log('found ind', ind, updatedPreviewObj);
+                    break;
                 }
+            }
 
-                return thisPreviewQuestion;
-            });
+            // console.log('previewObj', previewObj);
 
-            console.log('previewObj', previewObj);
+            // this.setState({
+            //     preview: previewObj
+            // });
+            if( ind != null ) 
+            {
+                const updatedPreview = update(this.state.preview, {$splice: [[ind, 1, updatedPreviewObj]]}); 
 
-            this.setState({
-                preview: previewObj//{
-                    // ...this.state.preview,
-                    // preview: 
+                console.log('updatedPreview', updatedPreview);
+                this.setState({
+                    preview: updatedPreview
+                }); 
 
-                // }
-            });
+                // this.setState(
+                //     update(this.state.preview, {
+                //         ind: {
+                //             $set: { 
+                //                 optionValue: evt.target.value
+                //             }
+                //         }
+                //     })
+                // );
+
+                console.log('ind', ind, evt.target.value, this.state.preview);
+            }
+
         
             // console.log('previewObj', previewObj);
             // this.setState({
@@ -144,7 +180,6 @@ class QuestionnaireCreator extends React.Component {
                 }
             });
         }
-
     };
 
     returnFormRender( formObj, preview? ) {
@@ -153,7 +188,7 @@ class QuestionnaireCreator extends React.Component {
     	// will have 
     	// label, value
 
-    	let { label, type, placeholder, helper, options, question, optionValue } = formObj;
+    	let { label, questiontype, placeholder, helper, options, question, optionValue } = formObj;
 
         if( !question || question == null ) {
             return false;
@@ -162,7 +197,7 @@ class QuestionnaireCreator extends React.Component {
     	const thisUuid = uuid();
         const newUuid = uuid();
 
-        if( type === 'input' )
+        if( questiontype === 'input' )
         {
             return (
                 <div className="demo-input-container">
@@ -170,14 +205,14 @@ class QuestionnaireCreator extends React.Component {
                         label={ label }
                         placeholder={ placeholder } 
                         value={ formObj.optionValue || "" } 
-                        onBlur={ (evt) => this.updateOptionValue( evt, formObj, preview ) }
+                        onChange={ (evt) => this.updateOptionValue( evt, formObj, preview ) }
                         helperText={ helper } 
                         fullWidth
                         variant="filled" />
                 </div>
             );
         }
-        else if( type === 'select' )
+        else if( questiontype === 'select' )
         {
             return (
                 <div className="demo-select-container">
@@ -208,7 +243,7 @@ class QuestionnaireCreator extends React.Component {
                 </div>
             );
         }
-        else if( type === 'textarea' )
+        else if( questiontype === 'textarea' )
         {
             return (
                 <div className="demo-select-container">
@@ -224,12 +259,12 @@ class QuestionnaireCreator extends React.Component {
                 </div>
             );
         }
-        else if( type === 'checkbox' || type === 'radio' )
+        else if( questiontype === 'checkbox' || questiontype === 'radio' )
         {
             return (
                 <div className={{
-                    'demo-checkbox-container': type === 'checkbox',
-                    'demo-radio-container': type === 'radio'
+                    'demo-checkbox-container': questiontype === 'checkbox',
+                    'demo-radio-container': questiontype === 'radio'
                 }}>
                     <FormGroup row>
           				<FormLabel>{ label }</FormLabel>
@@ -242,7 +277,7 @@ class QuestionnaireCreator extends React.Component {
                                     className="form-selection-container"
                                     control={
 
-                                        ( type === 'checkbox' ) ?
+                                        ( questiontype === 'checkbox' ) ?
                                         (<Checkbox
                                             key={ thisOption.optionValue } 
                                             value={ thisOption.optionValue }
@@ -347,6 +382,27 @@ class QuestionnaireCreator extends React.Component {
         const { preview } = this.state;
 
         console.log('preview', preview);
+
+        axios.post("api/create-form", {
+            preview: preview
+        })
+        .then(res => {
+
+            if( res && res.success )
+            {
+                openSnackbar({
+                    msg: 'Saved Successfully!',
+                    actionBtn: 'Ok',
+                    duration: 5000
+                });
+
+                // this.getFormData();
+            }
+        })
+        .catch(err => {
+
+            console.log('err', err);
+        });
     };
 
     resetForm() {
@@ -355,7 +411,7 @@ class QuestionnaireCreator extends React.Component {
 
             question: {
                 ...this.state.question,
-                type: '',
+                questiontype: '',
                 question: '',
                 label: '',
                 helper: '',
@@ -369,7 +425,8 @@ class QuestionnaireCreator extends React.Component {
 
     renderSelection() {
 
-    	const { typeOfForm, helper, placeholder, type } = this.state.question;
+        const { helper, placeholder, questiontype } = this.state.question;
+    	const { typeOfForm } = this.state;
 
     	return (
     		<div className="selection-container">
@@ -378,15 +435,15 @@ class QuestionnaireCreator extends React.Component {
 	                    Select Question Type
 	                </InputLabel>
 	                <Select 
-	                	value={ this.state.question.type }
+	                	value={ this.state.question.questiontype }
 	                    onChange={evt => this.setState({
 	                    		question: {
 			                    	...this.state.question, 
-			                    	type: evt.target.value 
+			                    	questiontype: evt.target.value 
 		                    	}
 	                    	})
 	                	}
-	                    input={<Input name="question-type" id="question-type" value="" />}>
+	                    input={<Input name="question-type" id="question-type" />}>
 	                    
 	                    {
 	                        typeOfForm.map(thisOption => (
@@ -450,7 +507,7 @@ class QuestionnaireCreator extends React.Component {
 	                	} />
     			</FormControl>
     			{
-    				( type === 'select' || type === 'checkbox' || type === 'radio' ) ? 
+    				( questiontype === 'select' || questiontype === 'checkbox' || questiontype === 'radio' ) ? 
 						(
 			    			<FormControl fullWidth margin="normal" >
           						<InputLabel htmlFor="question-options">
