@@ -29,6 +29,7 @@ import MenuIcon 	from "@material-ui/icons/Menu";
     import CreateForm 	from "../modules/create-form";
     import GetForm 		from "../modules/get-form";
     import QuestionnaireCreator 		from "../modules/questionnaire-creator";
+    import AllQuestionnaire 		from "../modules/all-questionnaire";
 
 class Header extends React.Component {
 
@@ -88,6 +89,11 @@ class Header extends React.Component {
 				          		<ListItemText primary="Create Questions" />
 			        	</ListItem>
 		    		</Link>
+		    		<Link className="menu-link" to="/questionnaire">
+			        	<ListItem button style={{"textDecoration": "none"}}>
+				          		<ListItemText primary="All Questions" />
+			        	</ListItem>
+		    		</Link>
 		    	</List>
 			    <Divider />
 			    <List>
@@ -139,6 +145,7 @@ class Header extends React.Component {
 	                <Route path="/about" component={About} />
 	                <Route path="/form/:formid" component={GetForm} />
 	                <Route path="/create-form" component={CreateForm} />
+	                <Route path="/questionnaire" component={AllQuestionnaire} />
 	                <Route path="/create-questionnaire" component={QuestionnaireCreator} />
 				</div>
 			</Router>

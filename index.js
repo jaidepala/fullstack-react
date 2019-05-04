@@ -148,6 +148,16 @@ router.delete("/delete-form", (req, res) => {
     });
 });
 
+router.delete("/delete-questionnaire", (req, res) => {
+    const { id } = req.body;
+    
+    Template.findOneAndDelete(id, (err, response) => {
+        if (err) return res.send(err);
+
+        return res.json( response );
+    });
+});
+
 
 // router.get('*', (req, res) => {
 //     res.sendFile(path.join(__dirname+'/client/build/index.html'));
