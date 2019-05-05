@@ -110,9 +110,10 @@ class AllQuestionnaire extends React.Component {
 
             //     return thisPreviewQuestion;
             // });
+
             let updatedPreviewObj = null;
-            for(var i = 0, len = this.state.preview.length; i < len; i++) {
-                var thisPreviewQuestion = this.state.preview[i];
+            for(var i = 0, len = preview.preview.length; i < len; i++) {
+                var thisPreviewQuestion = preview.preview[i];
                 
                 if(thisPreviewQuestion.uuid === formObj.uuid) {
                     ind = i;
@@ -125,31 +126,32 @@ class AllQuestionnaire extends React.Component {
                 }
             }
 
-            // console.log('previewObj', previewObj);
+            // console.log('previewObj', ind, this.state.preview, updatedPreviewObj);
 
-            // this.setState({
-            //     preview: previewObj
-            // });
             if( ind != null ) 
             {
-                const updatedPreview = update(this.state.preview, {$splice: [[ind, 1, updatedPreviewObj]]}); 
+                // const updatedPreview = update(this.state.preview, {$splice: [[ind, 1, updatedPreviewObj]]}); 
 
-                console.log('updatedPreview', updatedPreview);
-                this.setState({
-                    preview: updatedPreview
-                }); 
+                // console.log('updatedPreview', updatedPreview);
+                // this.setState({
+                //     preview: updatedPreview
+                // }); 
 
-                // this.setState(
-                //     update(this.state.preview, {
-                //         ind: {
-                //             $set: { 
-                //                 optionValue: evt.target.value
-                //             }
-                //         }
-                //     })
-                // );
+                this.setState(
+                    update(this.state.preview, {
+                        [0]: {
+                            preview: {
+                                [ind]: {
+                                    $set: { 
+                                        optionValue: evt.target.value
+                                    }
+                                }
+                            }
+                        }
+                    })
+                );
 
-                console.log('ind', ind, evt.target.value, this.state.preview);
+                // console.log('ind', ind, evt.target.value, this.state.preview);
             }
 
         
@@ -282,7 +284,7 @@ class AllQuestionnaire extends React.Component {
                             options.map(thisOption => (
 
                                 <FormControlLabel
-                                	key={ thisOption.uuid }
+                                	key={ thisOption._id }
                                     value={ formObj.optionValue || '' }
                                     className="form-selection-container"
                                     control={
@@ -298,6 +300,7 @@ class AllQuestionnaire extends React.Component {
                                             key={ thisOption.optionValue } 
                                             value={ thisOption.optionValue }
                                             name={ newUuid }
+                                            checked={ formObj.optionValue === thisOption.optionValue }
 					                        onChange={ (evt) => this.updateOptionValue( evt, formObj, preview ) } />
 					                	)
                                     }
@@ -344,39 +347,47 @@ class AllQuestionnaire extends React.Component {
                 {
                     preview.map(( thisPreviewQuestion, thisPreviewQuestionIndex ) => {
 
-                    	console.log('thisPreviewQuestion', thisPreviewQuestion.preview);
+                        return (
+                            <Card key={ thisPreviewQuestion._id } className="question-container"> 
 
-                    	return thisPreviewQuestion.preview.map( (thisQuestion) => {
+                                {
+                                    thisPreviewQuestion.preview.map( (thisQuestion) => {
 
-                    		console.log('thisQuestion', thisQuestion);
+                                        return (
+                                            <ExpansionPanel key={ thisQuestion._id } >
+                                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 
-                            return (
-                                <ExpansionPanel key={ thisQuestion._id } >
-                                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                                    <Typography>
+                                                        { thisQuestion.question }
+                                                    </Typography>
+                                                    <span className="expansion-panel-answer">
+                                                        { 
+                                                             this.returnOptionName( thisQuestion.options, thisQuestion.optionValue )
+                                                        }
+                                                    </span>
+                                                </ExpansionPanelSummary>                
+                                                <ExpansionPanelDetails>
+                                                    {
+                                                		this.returnFormRender( thisQuestion, thisPreviewQuestion )
+                                                    }
+                                                </ExpansionPanelDetails>
+                                            </ExpansionPanel>
+                                        )
+                                    })
+                                }
 
-                                        <Typography>
-                                            { thisQuestion.question }
-                                        </Typography>
-                                        <span className="expansion-panel-answer">
-                                            { 
-                                                 this.returnOptionName( thisQuestion.options, thisQuestion.optionValue )
-                                            }
-                                        </span>
-                                    </ExpansionPanelSummary>                
-                                    <ExpansionPanelDetails>
-                                        {
-                                    		this.returnFormRender( thisQuestion, thisPreviewQuestion )
-                                        }
-					                	<IconButton
-					                		onClick={ () => this.deleteQuestion( thisPreviewQuestion ) }
-					                  		aria-label="Delete Question">
+                                <div className="question-btn-container">
+                                    <Button 
+                                        variant="contained"
+                                        onClick={ () => this.deleteQuestion( thisPreviewQuestion ) }
+                                        aria-label="Delete Question">
 
-						                  	<DeleteIcon />
-					                	</IconButton>
-                                    </ExpansionPanelDetails>
-                                </ExpansionPanel>
-                            );
-                        })
+                                        <DeleteIcon />
+                                    </Button>
+                                </div>
+
+                            </Card>
+                        );
                     })
                 }
             </div>

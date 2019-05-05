@@ -10,6 +10,10 @@ body {
     padding: 0px 15px;
 }
 
+.question-btn-container {
+    float: right;
+}
+
 .expansion-panel-answer {
     padding-left: 50px;
     color: #696969;
